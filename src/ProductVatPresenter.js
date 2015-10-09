@@ -3,7 +3,7 @@
 class ProductVatPresenter extends ProductPresenter {
 
   present(product) {
-    super(product);
+    super.present(product);
     product.vat = this.getVat(product);
     return product;
   }

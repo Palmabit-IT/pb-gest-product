@@ -31,17 +31,6 @@ Thumbs.db
 .idea/
 
 # --------------------
-# Netbeans Files
-# --------------------
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-nbactions.xml
-nb-configuration.xml
-
-# --------------------
 # Node Files
 # --------------------
 .nodemonignore

@@ -2,7 +2,7 @@
 
 ##Installation
 
-    npm install pb-gest-product --save
+    bower install pb-gest-product --save
 
 ## Develop
 

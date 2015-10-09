@@ -39,40 +39,60 @@ var ProductPresenter = (function () {
       }
 
       if (!product.price) {
-        this.calculatePrice(product);
+        this.getPrice(product);
       }
 
-      this.calculateQty(product);
+      this.getQuantity(product);
 
       return product;
     }
   }, {
-    key: 'calculatePrice',
-    value: function calculatePrice(product) {
+    key: 'getPrice',
+    value: function getPrice(product) {
       var i,
-          user = this.user,
-          products = user.products || [];
+          user = this.user;
+      // var products = user.products || [];
 
-      for (i = 0; i < products.length; i += 1) {
-        if (product && products[i].product === product._id) {
-          product.price = products[i].price_customer;
-          return product;
-        }
+      // for (i = 0; i < products.length; i += 1) {
+      //   if (product && products[i].product === product._id) {
+      //     product.price = products[i].price_customer;
+      //     return product;
+      //   }
+      // }
+
+      if (this.getListPrice(product, user.list)) {
+        //priority 1
+        return product;
       }
-
-      for (var i = 0; i < product.prices.length; i += 1) {
-        if (user.activeList && product.prices[i].list === user.activeList._id) {
-          product.price = product.prices[i].price;
-          return product;
-        }
+      if (this.getListPrice(product, user.list_default)) {
+        //priority 2
+        return product;
+      }
+      if (this.getListPrice(product, user.list_active)) {
+        //priority 3
+        return product;
       }
 
       product.price = 0;
       return product;
     }
   }, {
-    key: 'calculateQty',
-    value: function calculateQty(product) {
+    key: 'getListPrice',
+    value: function getListPrice(product, list) {
+      if (!Array.isArray(product.prices) || !list) {
+        return;
+      }
+
+      for (var i = 0; i < product.prices.length; i += 1) {
+        if (product.prices[i].list === list._id) {
+          product.price = product.prices[i].price;
+          return product;
+        }
+      }
+    }
+  }, {
+    key: 'getQuantity',
+    value: function getQuantity(product) {
       if (product.lots && product.lots.length > 0) {
         product.quantity = 0;
 

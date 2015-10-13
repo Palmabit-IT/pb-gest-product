@@ -20,7 +20,7 @@ class ProductVatPresenter extends ProductPresenter {
     } else if (product.rate) {                //product's regular vat
       return product.rate;
     } else {                                  //default vat
-      return null;
+      return this.user.rate_default || null;
     }
   }
 

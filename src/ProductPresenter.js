@@ -2,7 +2,7 @@
 
 class ProductPresenter {
   constructor (user) {
-    this.user = user;
+    this.user = user || {};
   }
 
   presentList (products) {
@@ -30,7 +30,7 @@ class ProductPresenter {
   }
 
   getPrice(product) {
-    var i, user = this.user || {};
+    var i, user = this.user;
     // var products = user.products || [];
 
     // for (i = 0; i < products.length; i += 1) {

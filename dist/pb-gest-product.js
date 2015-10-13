@@ -13,7 +13,7 @@ var ProductPresenter = (function () {
   function ProductPresenter(user) {
     _classCallCheck(this, ProductPresenter);
 
-    this.user = user;
+    this.user = user || {};
   }
 
   _createClass(ProductPresenter, [{
@@ -46,7 +46,7 @@ var ProductPresenter = (function () {
     key: 'getPrice',
     value: function getPrice(product) {
       var i,
-          user = this.user || {};
+          user = this.user;
       // var products = user.products || [];
 
       // for (i = 0; i < products.length; i += 1) {

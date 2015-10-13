@@ -1,7 +1,7 @@
 {
   "name": "pb-gest-product",
   "main": "index.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/Palmabit-IT/pb-gest-product",
   "authors": [
     "palmabit.com"

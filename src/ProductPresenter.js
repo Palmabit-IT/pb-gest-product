@@ -2,10 +2,6 @@
 
 class ProductPresenter {
   constructor (user) {
-    if (typeof user !== 'object') {
-      throw new TypeError('user must be an object');
-    }
-
     this.user = user;
   }
 
@@ -34,7 +30,7 @@ class ProductPresenter {
   }
 
   getPrice(product) {
-    var i, user = this.user;
+    var i, user = this.user || {};
     // var products = user.products || [];
 
     // for (i = 0; i < products.length; i += 1) {

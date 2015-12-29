@@ -68,4 +68,47 @@ describe("ProductPresenterTest", function () {
       expect(presented.quantity).toBe(50);
     });
   });
+
+  describe("Product presenter", function () {
+    var product;
+
+    beforeEach(function () {
+      product = {
+        prices: [
+          {list: 1, price: 1},
+          {list: 2, price: 2},
+          {list: 3, price: 3}
+        ],
+        intangible: false,
+        hasLots: true,
+        lots: [
+          {lot: 'a', quantity: 10},
+          {lot: 'b', quantity: 20}
+        ],
+        noLots: {quantity: 50}
+      };
+    });
+
+    it("should present product", function () {
+      var presenter = new ProductPresenter({list: {_id: 2}});
+      var presented = presenter.present(product);
+      expect(presented.price).toBe(2);
+      expect(presented.quantity).toBe(30);
+    });
+
+    it("should present product with custom price", function () {
+      product.price = 100;
+      var presenter = new ProductPresenter({list: {_id: 2}});
+      var presented = presenter.present(product);
+      expect(presented.price).toBe(100);
+      expect(presented.quantity).toBe(30);
+    });
+
+    it("should get exception id product isn't an object", function () {
+      var presenter = new ProductPresenter();
+      expect(function(){presenter.present()}).toThrow(new TypeError('product must be an object'));
+      expect(function(){presenter.present('')}).toThrow(new TypeError('product must be an object'));
+      expect(function(){presenter.present({})}).not.toThrow(new TypeError('product must be an object'));
+    });
+  });
 });

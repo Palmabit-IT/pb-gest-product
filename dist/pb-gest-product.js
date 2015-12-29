@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.2.0 - Copyright 2015 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.5.0 - Copyright 2015 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8,6 +8,233 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var ProductItemConverter = (function () {
+  function ProductItemConverter() {
+    _classCallCheck(this, ProductItemConverter);
+
+    this.items = [];
+    this.maxReached = [];
+    this.products = [];
+  }
+
+  _createClass(ProductItemConverter, [{
+    key: 'add',
+    value: function add(products, items) {
+      this.products = [];
+      this.items = items;
+      this.maxReached = [];
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = products[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var product = _step.value;
+
+          this._addProduct(product);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return this._merge();
+    }
+  }, {
+    key: 'get',
+    value: function get() {
+      return this.items;
+    }
+  }, {
+    key: 'getMaxReached',
+    value: function getMaxReached() {
+      return this.maxReached;
+    }
+  }, {
+    key: 'hasErrors',
+    value: function hasErrors() {
+      return this.maxReached.length > 0;
+    }
+  }, {
+    key: '_addProduct',
+    value: function _addProduct(product) {
+      if (!product) {
+        return;
+      }
+
+      product.hasLots === true ? this._addProductWithLots(product) : this._addProductWithoutLots(product);
+    }
+  }, {
+    key: '_addProductWithLots',
+    value: function _addProductWithLots(product) {
+      //Split lots
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = product.lots[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var lot = _step2.value;
+
+          var item = undefined;
+
+          if (!lot.quantity || lot.quantity === 0) {
+            continue;
+          }
+
+          item = this._create(product, lot);
+
+          if (item.lots) {
+            delete item.lots;
+          }
+
+          this.products.push(item);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+            _iterator2['return']();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+    }
+  }, {
+    key: '_addProductWithoutLots',
+    value: function _addProductWithoutLots(product) {
+      var item = product.intangible === true ? product : this._create(product, product.noLots);
+
+      if (item.noLots) {
+        delete item.noLots;
+      }
+
+      this.products.push(item);
+    }
+  }, {
+    key: '_create',
+    value: function _create(product, lot) {
+      lot = lot || {};
+
+      return Object.assign({}, product, {
+        quantity: lot.quantity,
+        maxQty: lot.maxQty,
+        lot: {
+          lot: lot.lot,
+          date: lot.date,
+          expiration: lot.expiration
+        },
+        warehouse: lot.warehouse
+      });
+    }
+  }, {
+    key: '_merge',
+    value: function _merge() {
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = this.products[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var product = _step3.value;
+
+          var found = false;
+
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            for (var _iterator4 = this.items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var item = _step4.value;
+
+              if (product._id !== item._id) {
+                continue;
+              }
+
+              if (product.hasLots !== true) {
+                found = true;
+                this._incrementItems(product, item);
+              } else if (product.lot && item.lot && product.lot.lot === item.lot.lot) {
+                found = true;
+                this._incrementItems(product, item);
+              }
+            }
+          } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+                _iterator4['return']();
+              }
+            } finally {
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+
+          ;
+
+          if (!found) {
+            this.items.push(product);
+          }
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+            _iterator3['return']();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      ;
+    }
+  }, {
+    key: '_incrementItems',
+    value: function _incrementItems(product, item) {
+      if (product.intangible === true || product.quantity + item.quantity <= item.maxQty) {
+        item.quantity = product.quantity + item.quantity;
+      } else {
+        item.quantity = item.maxQty;
+
+        this.maxReached.push({
+          description: item.description,
+          lot: item.lot && item.lot.lot ? item.lot.lot : '-'
+        });
+      }
+    }
+  }]);
+
+  return ProductItemConverter;
+})();
+
+'use strict';
 
 var ProductPresenter = (function () {
   function ProductPresenter(user) {
@@ -89,6 +316,25 @@ var ProductPresenter = (function () {
   }, {
     key: 'getQuantity',
     value: function getQuantity(product) {
+      if (product.intangible === true) {
+        return product;
+      }
+
+      return this.getTangibleQuantity(product);
+    }
+  }, {
+    key: 'getTangibleQuantity',
+    value: function getTangibleQuantity(product) {
+      if (product.hasLots) {
+        return this.getQuantityFromLots(product);
+      } else if (product.noLots) {
+        product.quantity = product.noLots.quantity;
+        return product;
+      }
+    }
+  }, {
+    key: 'getQuantityFromLots',
+    value: function getQuantityFromLots(product) {
       if (product.lots && product.lots.length > 0) {
         product.quantity = 0;
 

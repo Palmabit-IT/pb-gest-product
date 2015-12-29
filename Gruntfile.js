@@ -57,6 +57,5 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-babel');
 
   // Default task(s).
-  // grunt.registerTask('default', ['karma', 'concat', 'babel', 'uglify']);
-  grunt.registerTask('default', ['concat', 'babel', 'uglify']);
+  grunt.registerTask('default', ['karma', 'concat', 'babel', 'uglify']);
 };

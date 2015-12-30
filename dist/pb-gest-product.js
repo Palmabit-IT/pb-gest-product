@@ -29,6 +29,57 @@ var ItemFactory = function ItemFactory(item) {
 
 'use strict';
 
+var ItemManager = (function () {
+  function ItemManager(item) {
+    _classCallCheck(this, ItemManager);
+
+    if (!item) {
+      throw new Error('item must be an object');
+    }
+
+    item.quantity = item.quantity || 0;
+    this.item = item;
+  }
+
+  _createClass(ItemManager, [{
+    key: 'get',
+    value: function get() {
+      return this.item;
+    }
+  }, {
+    key: 'set',
+    value: function set(item) {
+      this.item = item;
+    }
+  }, {
+    key: 'decrement',
+    value: function decrement() {
+      var item = this.item;
+
+      if (item.quantity > 0) {
+        item.quantity -= 1;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'increment',
+    value: function increment() {
+      var item = this.item;
+
+      if (item.intangible || item.quantity < item.maxQty) {
+        item.quantity += 1;
+      }
+
+      return this;
+    }
+  }]);
+
+  return ItemManager;
+})();
+
+'use strict';
+
 var ProductItemConverter = (function () {
   function ProductItemConverter() {
     _classCallCheck(this, ProductItemConverter);

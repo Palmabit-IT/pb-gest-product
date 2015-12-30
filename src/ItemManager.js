@@ -31,7 +31,7 @@ class ItemManager {
   increment() {
     var item = this.item;
 
-    if (item.intangible || item.quantity < item.maxQty) {
+    if (item.intangible || !item.maxQty || item.quantity < item.maxQty) {
       item.quantity += 1;
     }
 

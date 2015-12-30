@@ -86,7 +86,10 @@ class ProductItemConverter {
           continue;
         }
 
-        if ((product.intangible === true) || (product.lot && item.lot && product.lot.lot === item.lot.lot) || (!product.lot && !item.lot)) {
+        if ((product.intangible === true) || (!product.lot && !item.lot)) {
+          found = true;
+          this._incrementItems(product, item);
+        } else if (product.lot.lot === item.lot.lot && this._compareDates(product.lot, item.lot)) {
           found = true;
           this._incrementItems(product, item);
         }
@@ -109,5 +112,22 @@ class ProductItemConverter {
         lot: item.lot && item.lot.lot ? item.lot.lot : '-'
       });
     }
+  }
+
+  _compareDates(productLot, itemLot) {
+    var date1, date2;
+    var exp1 = productLot.expiration;
+    var exp2 = itemLot.expiration;
+
+    if (!exp1 && !exp2) {
+      return true;
+    } else if (!exp1 || !exp2) {
+      return false;
+    }
+
+    date1 = new Date(exp1);
+    date2 = new Date(exp2);
+
+    return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() === date2.getDate();
   }
 }

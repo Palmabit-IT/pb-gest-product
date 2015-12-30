@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.3.0 - Copyright 2015 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.4.0 - Copyright 2015 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8,6 +8,26 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var ItemFactory = function ItemFactory(item) {
+  _classCallCheck(this, ItemFactory);
+
+  this.item = item;
+
+  if (!item) {
+    throw new Error('item must be an object');
+  }
+
+  if (item.intangible) {
+    return new ItemIntangible(item);
+  } else if (item.hasLots) {
+    return new ItemLots(item);
+  } else {
+    return new ItemNoLots(item);
+  }
+};
+
+'use strict';
 
 var ProductItemConverter = (function () {
   function ProductItemConverter() {
@@ -414,4 +434,190 @@ var ProductVatPresenter = (function (_ProductPresenter) {
 
   return ProductVatPresenter;
 })(ProductPresenter);
+
+'use strict';
+
+var ItemIntangible = (function () {
+  function ItemIntangible(item) {
+    _classCallCheck(this, ItemIntangible);
+
+    item = item || {};
+    //Set initial quantity
+    item.quantity = 1;
+
+    this.item = item;
+  }
+
+  _createClass(ItemIntangible, [{
+    key: 'get',
+    value: function get() {
+      return this.item;
+    }
+  }, {
+    key: 'set',
+    value: function set(item) {
+      this.item = item;
+    }
+  }, {
+    key: 'decrement',
+    value: function decrement(index) {
+      var item = this.item;
+      item.quantity = parseInt(item.quantity || 0);
+
+      if (item.quantity > 0) {
+        item.quantity -= 1;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'increment',
+    value: function increment(index) {
+      var item = this.item;
+      item.quantity = parseInt(item.quantity || 0);
+      item.quantity += 1;
+      return this;
+    }
+  }]);
+
+  return ItemIntangible;
+})();
+
+'use strict';
+
+var ItemLots = (function () {
+  function ItemLots(item) {
+    _classCallCheck(this, ItemLots);
+
+    item = item || {};
+    item.lots = item.lots || [];
+
+    this.item = item;
+
+    //Set max quantity and initial quantity
+    item.lots.forEach(function (lot, i) {
+      lot.maxQty = lot.quantity;
+      lot.quantity = i == 0 ? 1 : 0;
+    });
+  }
+
+  _createClass(ItemLots, [{
+    key: 'get',
+    value: function get() {
+      return this.item;
+    }
+  }, {
+    key: 'set',
+    value: function set(item) {
+      this.item = item;
+    }
+  }, {
+    key: 'decrement',
+    value: function decrement(index) {
+      var item = this.item;
+
+      if (item.lots.length === 0) {
+        return this;
+      }
+
+      index = index || item.lots.length - 1;
+      item.lots[index].quantity = parseInt(item.lots[index].quantity || 0);
+
+      if (index <= 0 || item.lots[index].quantity <= 0) {
+        if (item.lots[0].quantity > 0) {
+          item.lots[0].quantity -= 1;
+        }
+      } else {
+        if (item.lots[index].quantity > 0) {
+          item.lots[index].quantity -= 1;
+        }
+      }
+
+      return this;
+    }
+  }, {
+    key: 'increment',
+    value: function increment(index) {
+      var item = this.item;
+
+      index = index || 0;
+
+      if (index >= item.lots.length) {
+        return this;
+      }
+
+      item.lots[index].quantity = parseInt(item.lots[index].quantity || 0);
+      item.lots[index].maxQty = parseInt(item.lots[index].maxQty || 0);
+
+      if (item.lots[index].quantity + 1 > item.lots[index].maxQty) {
+        return this.increment(index + 1);
+      } else {
+        item.lots[index].quantity += 1;
+      }
+
+      return this;
+    }
+  }]);
+
+  return ItemLots;
+})();
+
+'use strict';
+
+var ItemNoLots = (function () {
+  function ItemNoLots(item) {
+    _classCallCheck(this, ItemNoLots);
+
+    item = item || {};
+    item.noLots = item.noLots || {};
+
+    //Set max quantity and initial quantity
+    Object.assign(item.noLots, {
+      maxQty: item.noLots.quantity,
+      quantity: 1
+    });
+
+    this.item = item;
+  }
+
+  _createClass(ItemNoLots, [{
+    key: 'get',
+    value: function get() {
+      return this.item;
+    }
+  }, {
+    key: 'set',
+    value: function set(item) {
+      this.item = item;
+    }
+  }, {
+    key: 'decrement',
+    value: function decrement() {
+      var item = this.item;
+      item.noLots.quantity = parseInt(item.noLots.quantity || 0);
+
+      if (item.noLots.quantity > 0) {
+        item.noLots.quantity -= 1;
+      }
+
+      return this;
+    }
+  }, {
+    key: 'increment',
+    value: function increment() {
+      var item = this.item;
+
+      item.noLots.quantity = parseInt(item.noLots.quantity || 0);
+      item.noLots.maxQty = parseInt(item.noLots.maxQty || 0);
+
+      if (item.noLots.quantity + 1 <= item.noLots.maxQty) {
+        item.noLots.quantity += 1;
+      }
+
+      return this;
+    }
+  }]);
+
+  return ItemNoLots;
+})();
 //# sourceMappingURL=pb-gest-product.js.map

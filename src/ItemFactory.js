@@ -10,10 +10,8 @@ class ItemFactory {
 
     if (item.intangible) {
       return new ItemIntangible(item);
-    } else if (item.hasLots) {
-      return new ItemLots(item);
     } else {
-      return new ItemNoLots(item);
+      return new ItemLots(item);
     }
   }
 }

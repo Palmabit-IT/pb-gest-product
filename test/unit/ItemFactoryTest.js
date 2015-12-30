@@ -12,9 +12,4 @@ describe("ItemFactoryTest", function () {
     var factory = new ItemFactory({hasLots: true});
     expect(factory instanceof ItemLots).toBeTruthy();
   });
-
-  it("should instantiate ItemNoLots class", function () {
-    var factory = new ItemFactory({hasLots: false});
-    expect(factory instanceof ItemNoLots).toBeTruthy();
-  });
 });

@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.5.0 - Copyright 2015 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.6.0 - Copyright 2015 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -20,10 +20,8 @@ var ItemFactory = function ItemFactory(item) {
 
   if (item.intangible) {
     return new ItemIntangible(item);
-  } else if (item.hasLots) {
-    return new ItemLots(item);
   } else {
-    return new ItemNoLots(item);
+    return new ItemLots(item);
   }
 };
 
@@ -145,7 +143,7 @@ var ProductItemConverter = (function () {
         return;
       }
 
-      product.hasLots === true ? this._addProductWithLots(product) : this._addProductWithoutLots(product);
+      product.intangible === true ? this._addProductIntangible(product) : this._addProductWithLots(product);
     }
   }, {
     key: '_addProductWithLots',
@@ -189,15 +187,9 @@ var ProductItemConverter = (function () {
       }
     }
   }, {
-    key: '_addProductWithoutLots',
-    value: function _addProductWithoutLots(product) {
-      var item = product.intangible === true ? product : this._create(product, product.noLots);
-
-      if (item.noLots) {
-        delete item.noLots;
-      }
-
-      this.products.push(item);
+    key: '_addProductIntangible',
+    value: function _addProductIntangible(product) {
+      this.products.push(product);
     }
   }, {
     key: '_create',
@@ -240,10 +232,7 @@ var ProductItemConverter = (function () {
                 continue;
               }
 
-              if (product.hasLots !== true) {
-                found = true;
-                this._incrementItems(product, item);
-              } else if (product.lot && item.lot && product.lot.lot === item.lot.lot) {
+              if (product.intangible === true || product.lot && item.lot && product.lot.lot === item.lot.lot || !product.lot && !item.lot) {
                 found = true;
                 this._incrementItems(product, item);
               }
@@ -289,7 +278,7 @@ var ProductItemConverter = (function () {
   }, {
     key: '_incrementItems',
     value: function _incrementItems(product, item) {
-      if (product.intangible === true || product.quantity + item.quantity <= item.maxQty) {
+      if (product.intangible === true || !item.maxQty || product.quantity + item.quantity <= item.maxQty) {
         item.quantity = product.quantity + item.quantity;
       } else {
         item.quantity = item.maxQty;
@@ -391,17 +380,7 @@ var ProductPresenter = (function () {
         return product;
       }
 
-      return this.getTangibleQuantity(product);
-    }
-  }, {
-    key: 'getTangibleQuantity',
-    value: function getTangibleQuantity(product) {
-      if (product.hasLots) {
-        return this.getQuantityFromLots(product);
-      } else if (product.noLots) {
-        product.quantity = product.noLots.quantity;
-        return product;
-      }
+      return this.getQuantityFromLots(product);
     }
   }, {
     key: 'getQuantityFromLots',

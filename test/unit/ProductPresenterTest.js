@@ -39,12 +39,10 @@ describe("ProductPresenterTest", function () {
     beforeEach(function () {
       product = {
         intangible: false,
-        hasLots: true,
         lots: [
           {lot: 'a', quantity: 10},
           {lot: 'b', quantity: 20}
-        ],
-        noLots: {quantity: 50}
+        ]
       };
     });
 
@@ -60,13 +58,6 @@ describe("ProductPresenterTest", function () {
       var presented = presenter.getQuantity(product);
       expect(presented.quantity).toBe(30);
     });
-
-    it("should get quantity if product has no lots", function () {
-      product.hasLots = false;
-      var presenter = new ProductPresenter();
-      var presented = presenter.getQuantity(product);
-      expect(presented.quantity).toBe(50);
-    });
   });
 
   describe("Product presenter", function () {
@@ -80,12 +71,10 @@ describe("ProductPresenterTest", function () {
           {list: 3, price: 3}
         ],
         intangible: false,
-        hasLots: true,
         lots: [
           {lot: 'a', quantity: 10},
           {lot: 'b', quantity: 20}
-        ],
-        noLots: {quantity: 50}
+        ]
       };
     });
 

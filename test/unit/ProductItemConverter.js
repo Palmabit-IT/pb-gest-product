@@ -108,7 +108,7 @@ describe("ProductItemConverterTest", function () {
           price: 3,
           intangible: false,
           lots: [
-            {quantity: 10}
+            {quantity: 15}
           ]
         },
         {
@@ -125,9 +125,9 @@ describe("ProductItemConverterTest", function () {
       var converter = new ProductItemConverter();
       converter.add(products, items);
       expect(items.length).toBe(3);
-      // expect(items[0].quantity).toBe(5);
-      // expect(items[1].quantity).toBe(40);
-      // expect(items[2].quantity).toBe(70);
+      expect(items[0].quantity).toBe(5);
+      expect(items[1].quantity).toBe(40);
+      expect(items[2].quantity).toBe(70);
     });
   });
 });

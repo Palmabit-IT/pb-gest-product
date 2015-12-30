@@ -72,16 +72,7 @@ class ProductPresenter {
       return product;
     }
 
-    return this.getTangibleQuantity(product);
-  }
-
-  getTangibleQuantity(product) {
-    if (product.hasLots) {
-      return this.getQuantityFromLots(product);
-    } else if (product.noLots) {
-      product.quantity = product.noLots.quantity;
-      return product;
-    }
+    return this.getQuantityFromLots(product);
   }
 
   getQuantityFromLots(product) {

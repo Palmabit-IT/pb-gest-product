@@ -10,6 +10,7 @@ describe("ProductItemConverterTest", function () {
           _id: 1,
           price: 2,
           intangible: false,
+          hasLots: true,
           lots: [
             {lot: 'a', quantity: 10},
             {lot: 'b', quantity: 20}
@@ -19,6 +20,7 @@ describe("ProductItemConverterTest", function () {
           _id: 2,
           price: 3,
           intangible: false,
+          hasLots: false,
           lots: [
             {quantity: 30},
             {quantity: 40}
@@ -73,6 +75,7 @@ describe("ProductItemConverterTest", function () {
           quantity: 5,
           maxQty: 5,
           intangible: false,
+          hasLots: true,
           lot: {
             lot: 'a'
           }
@@ -83,6 +86,7 @@ describe("ProductItemConverterTest", function () {
           quantity: 30,
           maxQty: 40,
           intangible: false,
+          hasLots: true,
           lot: {}
         },
         {
@@ -99,6 +103,7 @@ describe("ProductItemConverterTest", function () {
           _id: 1,
           price: 2,
           intangible: false,
+          hasLots: true,
           lots: [
             {lot: 'a', quantity: 10}
           ]
@@ -107,6 +112,7 @@ describe("ProductItemConverterTest", function () {
           _id: 2,
           price: 3,
           intangible: false,
+          hasLots: true,
           lots: [
             {quantity: 15}
           ]

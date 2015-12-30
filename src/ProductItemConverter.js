@@ -86,10 +86,10 @@ class ProductItemConverter {
           continue;
         }
 
-        if ((product.intangible === true) || (!product.lot && !item.lot)) {
+        if ((product.intangible === true) || (!product.hasLots && this._areDatesEqual(product.lot, item.lot))) {
           found = true;
           this._incrementItems(product, item);
-        } else if (product.lot.lot === item.lot.lot && this._compareDates(product.lot, item.lot)) {
+        } else if (product.lot.lot === item.lot.lot && this._areDatesEqual(product.lot, item.lot)) {
           found = true;
           this._incrementItems(product, item);
         }
@@ -114,7 +114,7 @@ class ProductItemConverter {
     }
   }
 
-  _compareDates(productLot, itemLot) {
+  _areDatesEqual(productLot, itemLot) {
     var date1, date2;
     var exp1 = productLot.expiration;
     var exp2 = itemLot.expiration;

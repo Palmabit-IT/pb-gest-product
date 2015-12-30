@@ -36,7 +36,7 @@ class ProductItemConverter {
       return;
     }
 
-    product.hasLots === true ? this._addProductWithLots(product) : this._addProductWithoutLots(product);
+    product.intangible === true ? this._addProductIntangible(product) : this._addProductWithLots(product);
   }
 
   _addProductWithLots(product) {
@@ -58,14 +58,8 @@ class ProductItemConverter {
     }
   }
 
-  _addProductWithoutLots(product) {
-    var item = product.intangible === true ? product : this._create(product, product.noLots);
-
-    if (item.noLots) {
-      delete item.noLots;
-    }
-
-    this.products.push(item);
+  _addProductIntangible(product) {
+    this.products.push(product);
   }
 
   _create(product, lot) {
@@ -92,10 +86,7 @@ class ProductItemConverter {
           continue;
         }
 
-        if (product.hasLots !== true) {
-          found = true;
-          this._incrementItems(product, item);
-        } else if (product.lot && item.lot && product.lot.lot === item.lot.lot) {
+        if ((product.intangible === true) || (product.lot && item.lot && product.lot.lot === item.lot.lot) || (!product.lot && !item.lot)) {
           found = true;
           this._incrementItems(product, item);
         }
@@ -108,7 +99,7 @@ class ProductItemConverter {
   }
 
   _incrementItems(product, item) {
-    if (product.intangible === true || product.quantity + item.quantity <= item.maxQty) {
+    if (product.intangible === true || !item.maxQty || product.quantity + item.quantity <= item.maxQty) {
       item.quantity = product.quantity + item.quantity;
     } else {
       item.quantity = item.maxQty;

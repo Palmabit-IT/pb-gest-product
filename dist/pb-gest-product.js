@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.6.2 - Copyright 2015 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.6.3 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -410,7 +410,11 @@ var ProductPresenter = (function () {
         product.quantity = 0;
 
         product.lots.sort(function (a, b) {
-          return new Date(a.expiration) - new Date(b.expiration);
+          if (a.expiration && b.expiration) {
+            return new Date(a.expiration) - new Date(b.expiration);
+          } else {
+            return new Date(a.date) - new Date(b.date);
+          }
         });
 
         for (var i = 0; i < product.lots.length; i += 1) {
@@ -611,64 +615,5 @@ var ItemLots = (function () {
   }]);
 
   return ItemLots;
-})();
-
-'use strict';
-
-var ItemNoLots = (function () {
-  function ItemNoLots(item) {
-    _classCallCheck(this, ItemNoLots);
-
-    item = item || {};
-    item.noLots = item.noLots || {};
-
-    //Set max quantity and initial quantity
-    Object.assign(item.noLots, {
-      maxQty: item.noLots.quantity,
-      quantity: 1
-    });
-
-    this.item = item;
-  }
-
-  _createClass(ItemNoLots, [{
-    key: 'get',
-    value: function get() {
-      return this.item;
-    }
-  }, {
-    key: 'set',
-    value: function set(item) {
-      this.item = item;
-    }
-  }, {
-    key: 'decrement',
-    value: function decrement() {
-      var item = this.item;
-      item.noLots.quantity = parseInt(item.noLots.quantity || 0);
-
-      if (item.noLots.quantity > 0) {
-        item.noLots.quantity -= 1;
-      }
-
-      return this;
-    }
-  }, {
-    key: 'increment',
-    value: function increment() {
-      var item = this.item;
-
-      item.noLots.quantity = parseInt(item.noLots.quantity || 0);
-      item.noLots.maxQty = parseInt(item.noLots.maxQty || 0);
-
-      if (item.noLots.quantity + 1 <= item.noLots.maxQty) {
-        item.noLots.quantity += 1;
-      }
-
-      return this;
-    }
-  }]);
-
-  return ItemNoLots;
 })();
 //# sourceMappingURL=pb-gest-product.js.map

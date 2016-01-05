@@ -100,4 +100,44 @@ describe("ProductPresenterTest", function () {
       expect(function(){presenter.present({})}).not.toThrow(new TypeError('product must be an object'));
     });
   });
+
+  describe("Sort lots by dates", function () {
+    var presenter, product,
+        date1 = new Date(),
+        date2 = new Date(date1),
+        date3 = new Date(date1);
+
+    date2 = date2.setDate(date2.getDate() + 1);
+    date3 = date3.setDate(date3.getDate() + 2);
+
+    beforeEach(function () {
+      presenter = new ProductPresenter();
+    });
+
+    it("should sorting lots by dates", function () {
+      var presented = presenter.getQuantityFromLots({
+        lots: [
+          {lot: 'a', quantity: 10, date: date3},
+          {lot: 'b', quantity: 20, date: date2},
+          {lot: 'c', quantity: 20, date: date1}
+        ]
+      });
+      expect(presented.lots[0].lot).toBe('c');
+      expect(presented.lots[1].lot).toBe('b');
+      expect(presented.lots[2].lot).toBe('a');
+    });
+
+    it("should sorting lots by expiration dates", function () {
+      var presented = presenter.getQuantityFromLots({
+        lots: [
+          {lot: 'a', quantity: 10, date: date3, expiration: date3},
+          {lot: 'b', quantity: 20, date: date2, expiration: date1},
+          {lot: 'c', quantity: 20, date: date1, expiration: date2}
+        ]
+      });
+      expect(presented.lots[0].lot).toBe('b');
+      expect(presented.lots[1].lot).toBe('c');
+      expect(presented.lots[2].lot).toBe('a');
+    });
+  });
 });

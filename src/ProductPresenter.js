@@ -80,7 +80,11 @@ class ProductPresenter {
       product.quantity = 0;
 
       product.lots.sort(function (a, b) {
-        return new Date(a.expiration) - new Date(b.expiration);
+        if (a.expiration && b.expiration) {
+          return new Date(a.expiration) - new Date(b.expiration);
+        } else {
+          return new Date(a.date) - new Date(b.date);
+        }
       });
 
       for (var i = 0; i < product.lots.length; i += 1) {

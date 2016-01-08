@@ -61,7 +61,8 @@ class ProductPresenter {
 
     for (var i = 0; i < product.prices.length; i += 1) {
       if (product.prices[i].list === list._id) {
-        product.price = product.prices[i].price;
+        let productPrice = new ProductPrice(list, product.prices[i]);
+        product.price = productPrice.getPrice();
         return product;
       }
     }

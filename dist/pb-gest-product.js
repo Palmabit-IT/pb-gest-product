@@ -389,7 +389,8 @@ var ProductPresenter = (function () {
 
       for (var i = 0; i < product.prices.length; i += 1) {
         if (product.prices[i].list === list._id) {
-          product.price = product.prices[i].price;
+          var productPrice = new ProductPrice(list, product.prices[i]);
+          product.price = productPrice.getPrice();
           return product;
         }
       }
@@ -427,6 +428,155 @@ var ProductPresenter = (function () {
   }]);
 
   return ProductPresenter;
+})();
+
+'use strict';
+
+var ProductPrice = (function () {
+  function ProductPrice(list, productPrice) {
+    _classCallCheck(this, ProductPrice);
+
+    this.list = list;
+    this.productPrice = productPrice;
+
+    if (typeof list !== 'object') {
+      throw new TypeError('list must be an object');
+    }
+
+    if (typeof productPrice !== 'object') {
+      throw new TypeError('product price must be an object');
+    }
+  }
+
+  _createClass(ProductPrice, [{
+    key: 'getPrice',
+    value: function getPrice() {
+      return this.productPriceHasVersion() ? this._getPriceWithVersion() : this._getPriceWithoutVersion();
+    }
+  }, {
+    key: '_getPriceWithVersion',
+    value: function _getPriceWithVersion() {
+      var version = this.findVersion(this.productPrice.version);
+
+      if (version && this.isActive(version) && this.isValid(version)) {
+        return this.productPrice.price || 0;
+      }
+
+      return 0;
+    }
+  }, {
+    key: '_getPriceWithoutVersion',
+    value: function _getPriceWithoutVersion() {
+      if (this.isValid(this.list) || this._hasValidVersion()) {
+        return this.productPrice.price || 0;
+      }
+
+      return 0;
+    }
+  }, {
+    key: 'productPriceHasVersion',
+    value: function productPriceHasVersion() {
+      return typeof this.productPrice.version !== 'undefined' && this.productPrice.version;
+    }
+  }, {
+    key: 'listHasVersions',
+    value: function listHasVersions() {
+      return Array.isArray(this.list.versions) && this.list.versions.length > 0;
+    }
+  }, {
+    key: 'findVersion',
+    value: function findVersion(versionName) {
+      if (!versionName || !this.listHasVersions()) {
+        return;
+      }
+
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
+
+      try {
+        for (var _iterator5 = this.list.versions[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          var v = _step5.value;
+
+          if (v && v.name === versionName) {
+            return v;
+          }
+        }
+      } catch (err) {
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion5 && _iterator5['return']) {
+            _iterator5['return']();
+          }
+        } finally {
+          if (_didIteratorError5) {
+            throw _iteratorError5;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'isActive',
+    value: function isActive(version) {
+      return version && version.active === true;
+    }
+  }, {
+    key: 'isValid',
+    value: function isValid(version) {
+      var start,
+          end,
+          now = Date.now();
+
+      if (!version) {
+        return false;
+      }
+
+      if (version.start) {
+        start = new Date(version.start);
+      }
+      if (version.end) {
+        end = new Date(version.end);
+      }
+
+      return (!start || start <= now) && (!end || end >= now);
+    }
+  }, {
+    key: '_hasValidVersion',
+    value: function _hasValidVersion() {
+      var _iteratorNormalCompletion6 = true;
+      var _didIteratorError6 = false;
+      var _iteratorError6 = undefined;
+
+      try {
+        for (var _iterator6 = this.list.versions[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          var v = _step6.value;
+
+          if (this.isActive(v) && this.isValid(v)) {
+            return true;
+          }
+        }
+      } catch (err) {
+        _didIteratorError6 = true;
+        _iteratorError6 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion6 && _iterator6['return']) {
+            _iterator6['return']();
+          }
+        } finally {
+          if (_didIteratorError6) {
+            throw _iteratorError6;
+          }
+        }
+      }
+
+      return false;
+    }
+  }]);
+
+  return ProductPrice;
 })();
 
 'use strict';

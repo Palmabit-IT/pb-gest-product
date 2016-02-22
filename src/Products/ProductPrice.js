@@ -1,7 +1,9 @@
 'use strict';
 
-class ProductPrice {
+class ProductPrice extends AbstractVersionable {
   constructor (list, productPrice) {
+    super(list);
+
     this.list = list;
     this.productPrice = productPrice;
 
@@ -29,7 +31,7 @@ class ProductPrice {
   }
 
   _getPriceWithoutVersion() {
-    if (this.isValid(this.list) || this._hasValidVersion()) {
+    if (this.isValid(this.list) || this.hasValidVersion()) {
       return this.productPrice.price || 0;
     }
 
@@ -38,53 +40,5 @@ class ProductPrice {
 
   productPriceHasVersion() {
     return typeof this.productPrice.version !== 'undefined' && this.productPrice.version;
-  }
-
-  listHasVersions() {
-    return Array.isArray(this.list.versions) && this.list.versions.length > 0;
-  }
-
-  findVersion(versionName) {
-    if (!versionName || !this.listHasVersions()) {
-      return;
-    }
-
-    for (let v of this.list.versions) {
-      if (v && v.name === versionName) {
-        return v;
-      }
-    }
-  }
-
-  isActive(version) {
-    return version && version.active === true;
-  }
-
-  isValid(version) {
-    var start, end,
-        now = Date.now();
-
-    if (!version) {
-      return false;
-    }
-
-    if (version.start) {
-      start = new Date(version.start);
-    }
-    if (version.end) {
-      end = new Date(version.end);
-    }
-
-    return (!start || start <= now) && (!end || end >= now);
-  }
-
-  _hasValidVersion() {
-    for (let v of this.list.versions) {
-      if (this.isActive(v) && this.isValid(v)) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }

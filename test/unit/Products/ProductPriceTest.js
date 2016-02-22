@@ -58,32 +58,6 @@ describe("Product list with version", function () {
     obj = new ProductPrice(list, productPrice);
   });
 
-  it("should check if product price has a version", function () {
-    expect(obj.productPriceHasVersion()).toBeTruthy();
-  });
-
-  it("should check if list has versions", function () {
-    expect(obj.listHasVersions()).toBeTruthy();
-  });
-
-  it("should search a specific list version", function () {
-    expect(typeof obj.findVersion(productPrice.version)).toBe('object');
-  });
-
-  it("should check if list has a version", function () {
-    expect(obj.productPriceHasVersion()).toBeTruthy();
-  });
-
-  it("should check if list version is active", function () {
-    expect(obj.isActive(list.versions[1])).toBeTruthy();
-    expect(obj.isActive(list.versions[2])).toBeFalsy();
-  });
-
-  it("should check if list version is valid", function () {
-    expect(obj.isValid(list.versions[1])).toBeTruthy();
-    expect(obj.isValid(list.versions[2])).toBeFalsy();
-  });
-
   it("should get price from list version", function () {
     expect(obj.getPrice()).toBe(10);
   });

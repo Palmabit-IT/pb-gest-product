@@ -112,3 +112,63 @@ describe("Product list with version", function () {
     });
   });
 });
+
+describe("Product adjustment without version", function () {
+  var list, obj;
+
+  beforeEach(function () {
+    list = {
+      name: 'L001',
+      adjustment: {
+        name: 'adj1',
+        fixed: 1,
+        adjustments: [10, 20, 30]
+      }
+    };
+
+    obj = new ProductPrice(list, {});
+  });
+
+  it("should get adjustment from list version", function () {
+    var adj = obj.getAdjustment();
+    expect(adj.name).toBe('adj1');
+    expect(adj.fixed).toBe(1);
+    expect(adj.adjustments).toEqual([10, 20, 30]);
+  });
+});
+
+describe("Product adjustment with version", function () {
+  var list, obj;
+
+  beforeEach(function () {
+    list = {
+      name: 'L001',
+      versions : [
+        {
+          name: '1',
+          active: true,
+          adjustment: {
+            name: 'adj1',
+            fixed: 1,
+            adjustments: [10, 20, 30]
+          }
+        }
+      ]
+    };
+
+    obj = new ProductPrice(list, {version: '1'});
+  });
+
+  it("should get adjustment from list version", function () {
+    var adj = obj.getAdjustment();
+    expect(adj.name).toBe('adj1');
+    expect(adj.fixed).toBe(1);
+    expect(adj.adjustments).toEqual([10, 20, 30]);
+  });
+
+  it("should get null adjustment if not valid version", function () {
+    var obj2 = new ProductPrice(list, {version: '2'});
+    var adj = obj2.getAdjustment();
+    expect(adj).toBeUndefined();
+  });
+});

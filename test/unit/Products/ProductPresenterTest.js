@@ -82,6 +82,16 @@ describe("ProductPresenterTest", function () {
       var presenter = new ProductPresenter({list: {_id: 2}});
       var presented = presenter.present(product);
       expect(presented.price).toBe(2);
+      expect(presented.adjustment).toBeUndefined();
+      expect(presented.quantity).toBe(30);
+    });
+
+    it("should present product with adjustment", function () {
+      var presenter = new ProductPresenter({list: {_id: 1, adjustment: {name: 'adj1', adjustments: [10, 20, 30]}}});
+      var presented = presenter.present(product);
+      expect(presented.price).toBe(1);
+      expect(presented.adjustment.name).toBe('adj1');
+      expect(presented.adjustment.adjustments).toEqual([10, 20, 30]);
       expect(presented.quantity).toBe(30);
     });
 
@@ -90,6 +100,7 @@ describe("ProductPresenterTest", function () {
       var presenter = new ProductPresenter({list: {_id: 2}});
       var presented = presenter.present(product);
       expect(presented.price).toBe(100);
+      expect(presented.adjustment).toBeUndefined();
       expect(presented.quantity).toBe(30);
     });
 

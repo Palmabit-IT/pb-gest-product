@@ -63,6 +63,7 @@ class ProductPresenter {
       if (product.prices[i].list === list._id) {
         let productPrice = new ProductPrice(list, product.prices[i]);
         product.price = productPrice.getPrice();
+        product.adjustment = productPrice.getAdjustment();
         return product;
       }
     }

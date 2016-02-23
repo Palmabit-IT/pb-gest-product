@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.7.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.8.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -205,6 +205,125 @@ var ItemManager = (function () {
 
 'use strict';
 
+var AbstractVersionable = (function () {
+  function AbstractVersionable(obj) {
+    _classCallCheck(this, AbstractVersionable);
+
+    this.obj = obj;
+  }
+
+  _createClass(AbstractVersionable, [{
+    key: 'hasVersion',
+    value: function hasVersion(obj) {
+      return obj && typeof obj.version !== 'undefined' && obj.version;
+    }
+  }, {
+    key: 'hasVersions',
+    value: function hasVersions() {
+      return this.obj && Array.isArray(this.obj.versions) && this.obj.versions.length > 0;
+    }
+  }, {
+    key: 'findVersion',
+    value: function findVersion(versionName) {
+      if (!versionName || !this.hasVersions()) {
+        return;
+      }
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.obj.versions[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var v = _step.value;
+
+          if (v && v.name === versionName) {
+            return v;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'isActive',
+    value: function isActive(version) {
+      return version && version.active === true;
+    }
+  }, {
+    key: 'isValid',
+    value: function isValid(version) {
+      var start,
+          end,
+          now = Date.now();
+
+      if (!version) {
+        return false;
+      }
+
+      if (version.start) {
+        start = new Date(version.start);
+      }
+      if (version.end) {
+        end = new Date(version.end);
+      }
+
+      return (!start || start <= now) && (!end || end >= now);
+    }
+  }, {
+    key: 'hasValidVersion',
+    value: function hasValidVersion() {
+      if (!this.hasVersions()) {
+        return false;
+      }
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.obj.versions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var v = _step2.value;
+
+          if (this.isActive(v) && this.isValid(v)) {
+            return true;
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+            _iterator2['return']();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      return false;
+    }
+  }]);
+
+  return AbstractVersionable;
+})();
+
+'use strict';
+
 var ProductItemConverter = (function () {
   function ProductItemConverter() {
     _classCallCheck(this, ProductItemConverter);
@@ -221,27 +340,27 @@ var ProductItemConverter = (function () {
       this.items = items;
       this.maxReached = [];
 
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
       try {
-        for (var _iterator = products[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var product = _step.value;
+        for (var _iterator3 = products[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var product = _step3.value;
 
           this._addProduct(product);
         }
       } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion && _iterator['return']) {
-            _iterator['return']();
+          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+            _iterator3['return']();
           }
         } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
+          if (_didIteratorError3) {
+            throw _iteratorError3;
           }
         }
       }
@@ -276,13 +395,13 @@ var ProductItemConverter = (function () {
     key: '_addProductWithLots',
     value: function _addProductWithLots(product) {
       //Split lots
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
-        for (var _iterator2 = product.lots[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var lot = _step2.value;
+        for (var _iterator4 = product.lots[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var lot = _step4.value;
 
           var item = undefined;
 
@@ -299,16 +418,16 @@ var ProductItemConverter = (function () {
           this.products.push(item);
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-            _iterator2['return']();
+          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+            _iterator4['return']();
           }
         } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
@@ -337,23 +456,23 @@ var ProductItemConverter = (function () {
   }, {
     key: '_merge',
     value: function _merge() {
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
 
       try {
-        for (var _iterator3 = this.products[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var product = _step3.value;
+        for (var _iterator5 = this.products[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          var product = _step5.value;
 
           var found = false;
 
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
 
           try {
-            for (var _iterator4 = this.items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var item = _step4.value;
+            for (var _iterator6 = this.items[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var item = _step6.value;
 
               if (product._id !== item._id) {
                 continue;
@@ -368,16 +487,16 @@ var ProductItemConverter = (function () {
               }
             }
           } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-                _iterator4['return']();
+              if (!_iteratorNormalCompletion6 && _iterator6['return']) {
+                _iterator6['return']();
               }
             } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
+              if (_didIteratorError6) {
+                throw _iteratorError6;
               }
             }
           }
@@ -389,16 +508,16 @@ var ProductItemConverter = (function () {
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-            _iterator3['return']();
+          if (!_iteratorNormalCompletion5 && _iterator5['return']) {
+            _iterator5['return']();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError5) {
+            throw _iteratorError5;
           }
         }
       }
@@ -518,6 +637,7 @@ var ProductPresenter = (function () {
         if (product.prices[i].list === list._id) {
           var productPrice = new ProductPrice(list, product.prices[i]);
           product.price = productPrice.getPrice();
+          product.adjustment = productPrice.getAdjustment();
           return product;
         }
       }
@@ -559,9 +679,13 @@ var ProductPresenter = (function () {
 
 'use strict';
 
-var ProductPrice = (function () {
+var ProductPrice = (function (_AbstractVersionable) {
+  _inherits(ProductPrice, _AbstractVersionable);
+
   function ProductPrice(list, productPrice) {
     _classCallCheck(this, ProductPrice);
+
+    _get(Object.getPrototypeOf(ProductPrice.prototype), 'constructor', this).call(this, list);
 
     this.list = list;
     this.productPrice = productPrice;
@@ -594,7 +718,7 @@ var ProductPrice = (function () {
   }, {
     key: '_getPriceWithoutVersion',
     value: function _getPriceWithoutVersion() {
-      if (this.isValid(this.list) || this._hasValidVersion()) {
+      if (this.isValid(this.list) || this.hasValidVersion()) {
         return this.productPrice.price || 0;
       }
 
@@ -606,105 +730,34 @@ var ProductPrice = (function () {
       return typeof this.productPrice.version !== 'undefined' && this.productPrice.version;
     }
   }, {
-    key: 'listHasVersions',
-    value: function listHasVersions() {
-      return Array.isArray(this.list.versions) && this.list.versions.length > 0;
+    key: 'getAdjustment',
+    value: function getAdjustment() {
+      return this.productPriceHasVersion() ? this._getAdjustmentWithVersion() : this._getAdjustmentWithoutVersion();
     }
   }, {
-    key: 'findVersion',
-    value: function findVersion(versionName) {
-      if (!versionName || !this.listHasVersions()) {
-        return;
+    key: '_getAdjustmentWithVersion',
+    value: function _getAdjustmentWithVersion() {
+      var version = this.findVersion(this.productPrice.version);
+
+      if (version && this.isActive(version) && this.isValid(version)) {
+        return version.adjustment;
       }
 
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
-
-      try {
-        for (var _iterator5 = this.list.versions[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-          var v = _step5.value;
-
-          if (v && v.name === versionName) {
-            return v;
-          }
-        }
-      } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion5 && _iterator5['return']) {
-            _iterator5['return']();
-          }
-        } finally {
-          if (_didIteratorError5) {
-            throw _iteratorError5;
-          }
-        }
-      }
+      return;
     }
   }, {
-    key: 'isActive',
-    value: function isActive(version) {
-      return version && version.active === true;
-    }
-  }, {
-    key: 'isValid',
-    value: function isValid(version) {
-      var start,
-          end,
-          now = Date.now();
-
-      if (!version) {
-        return false;
+    key: '_getAdjustmentWithoutVersion',
+    value: function _getAdjustmentWithoutVersion() {
+      if (this.isValid(this.list) || this.hasValidVersion()) {
+        return this.list.adjustment;
       }
 
-      if (version.start) {
-        start = new Date(version.start);
-      }
-      if (version.end) {
-        end = new Date(version.end);
-      }
-
-      return (!start || start <= now) && (!end || end >= now);
-    }
-  }, {
-    key: '_hasValidVersion',
-    value: function _hasValidVersion() {
-      var _iteratorNormalCompletion6 = true;
-      var _didIteratorError6 = false;
-      var _iteratorError6 = undefined;
-
-      try {
-        for (var _iterator6 = this.list.versions[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-          var v = _step6.value;
-
-          if (this.isActive(v) && this.isValid(v)) {
-            return true;
-          }
-        }
-      } catch (err) {
-        _didIteratorError6 = true;
-        _iteratorError6 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion6 && _iterator6['return']) {
-            _iterator6['return']();
-          }
-        } finally {
-          if (_didIteratorError6) {
-            throw _iteratorError6;
-          }
-        }
-      }
-
-      return false;
+      return;
     }
   }]);
 
   return ProductPrice;
-})();
+})(AbstractVersionable);
 
 'use strict';
 

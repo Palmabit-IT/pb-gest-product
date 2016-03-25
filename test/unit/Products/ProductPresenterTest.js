@@ -104,6 +104,16 @@ describe("ProductPresenterTest", function () {
       expect(presented.quantity).toBe(30);
     });
 
+    it("should present product without include vat", function () {
+      var presenter = new ProductPresenter({list: {_id: 1}});
+      expect(presenter.present(product).include_vat).toBeFalsy();
+    });
+
+    it("should present product with include vat", function () {
+      var presenter = new ProductPresenter({list: {_id: 1, include_vat: true}});
+      expect(presenter.present(product).include_vat).toBeTruthy();
+    });
+
     it("should get exception id product isn't an object", function () {
       var presenter = new ProductPresenter();
       expect(function(){presenter.present()}).toThrow(new TypeError('product must be an object'));

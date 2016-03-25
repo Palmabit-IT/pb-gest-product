@@ -64,6 +64,7 @@ class ProductPresenter {
         let productPrice = new ProductPrice(list, product.prices[i]);
         product.price = productPrice.getPrice();
         product.adjustment = productPrice.getAdjustment();
+        product.include_vat = !!list.include_vat;
         return product;
       }
     }

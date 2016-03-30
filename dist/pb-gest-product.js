@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.8.1 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.9.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -637,7 +637,7 @@ var ProductPresenter = (function () {
         if (product.prices[i].list === list._id) {
           var productPrice = new ProductPrice(list, product.prices[i]);
           product.price = productPrice.getPrice();
-          product.adjustment = productPrice.getAdjustment();
+          product.discount = productPrice.getDiscount();
           product.include_vat = !!list.include_vat;
           return product;
         }
@@ -731,26 +731,26 @@ var ProductPrice = (function (_AbstractVersionable) {
       return typeof this.productPrice.version !== 'undefined' && this.productPrice.version;
     }
   }, {
-    key: 'getAdjustment',
-    value: function getAdjustment() {
-      return this.productPriceHasVersion() ? this._getAdjustmentWithVersion() : this._getAdjustmentWithoutVersion();
+    key: 'getDiscount',
+    value: function getDiscount() {
+      return this.productPriceHasVersion() ? this._getDiscountWithVersion() : this._getDiscountWithoutVersion();
     }
   }, {
-    key: '_getAdjustmentWithVersion',
-    value: function _getAdjustmentWithVersion() {
+    key: '_getDiscountWithVersion',
+    value: function _getDiscountWithVersion() {
       var version = this.findVersion(this.productPrice.version);
 
       if (version && this.isActive(version) && this.isValid(version)) {
-        return version.adjustment;
+        return version.discount;
       }
 
       return;
     }
   }, {
-    key: '_getAdjustmentWithoutVersion',
-    value: function _getAdjustmentWithoutVersion() {
+    key: '_getDiscountWithoutVersion',
+    value: function _getDiscountWithoutVersion() {
       if (this.isValid(this.list) || this.hasValidVersion()) {
-        return this.list.adjustment;
+        return this.list.discount;
       }
 
       return;

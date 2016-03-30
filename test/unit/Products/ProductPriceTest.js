@@ -113,31 +113,31 @@ describe("Product list with version", function () {
   });
 });
 
-describe("Product adjustment without version", function () {
+describe("Product discount without version", function () {
   var list, obj;
 
   beforeEach(function () {
     list = {
       name: 'L001',
-      adjustment: {
+      discount: {
         name: 'adj1',
         fixed: 1,
-        adjustments: [10, 20, 30]
+        discounts: [10, 20, 30]
       }
     };
 
     obj = new ProductPrice(list, {});
   });
 
-  it("should get adjustment from list version", function () {
-    var adj = obj.getAdjustment();
+  it("should get discount from list version", function () {
+    var adj = obj.getDiscount();
     expect(adj.name).toBe('adj1');
     expect(adj.fixed).toBe(1);
-    expect(adj.adjustments).toEqual([10, 20, 30]);
+    expect(adj.discounts).toEqual([10, 20, 30]);
   });
 });
 
-describe("Product adjustment with version", function () {
+describe("Product discount with version", function () {
   var list, obj;
 
   beforeEach(function () {
@@ -147,10 +147,10 @@ describe("Product adjustment with version", function () {
         {
           name: '1',
           active: true,
-          adjustment: {
+          discount: {
             name: 'adj1',
             fixed: 1,
-            adjustments: [10, 20, 30]
+            discounts: [10, 20, 30]
           }
         }
       ]
@@ -159,16 +159,16 @@ describe("Product adjustment with version", function () {
     obj = new ProductPrice(list, {version: '1'});
   });
 
-  it("should get adjustment from list version", function () {
-    var adj = obj.getAdjustment();
+  it("should get discount from list version", function () {
+    var adj = obj.getDiscount();
     expect(adj.name).toBe('adj1');
     expect(adj.fixed).toBe(1);
-    expect(adj.adjustments).toEqual([10, 20, 30]);
+    expect(adj.discounts).toEqual([10, 20, 30]);
   });
 
-  it("should get null adjustment if not valid version", function () {
+  it("should get null discount if not valid version", function () {
     var obj2 = new ProductPrice(list, {version: '2'});
-    var adj = obj2.getAdjustment();
+    var adj = obj2.getDiscount();
     expect(adj).toBeUndefined();
   });
 });

@@ -42,23 +42,23 @@ class ProductPrice extends AbstractVersionable {
     return typeof this.productPrice.version !== 'undefined' && this.productPrice.version;
   }
 
-  getAdjustment() {
-    return this.productPriceHasVersion() ? this._getAdjustmentWithVersion() : this._getAdjustmentWithoutVersion();
+  getDiscount() {
+    return this.productPriceHasVersion() ? this._getDiscountWithVersion() : this._getDiscountWithoutVersion();
   }
 
-  _getAdjustmentWithVersion() {
+  _getDiscountWithVersion() {
     var version = this.findVersion(this.productPrice.version);
 
     if (version && this.isActive(version) && this.isValid(version)) {
-      return version.adjustment;
+      return version.discount;
     }
 
     return;
   }
 
-  _getAdjustmentWithoutVersion() {
+  _getDiscountWithoutVersion() {
     if (this.isValid(this.list) || this.hasValidVersion()) {
-      return this.list.adjustment;
+      return this.list.discount;
     }
 
     return;

@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.9.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.10.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -212,16 +212,33 @@ var AbstractVersionable = (function () {
     this.obj = obj;
   }
 
+  /**
+   * Check if object has a version
+   * @param obj
+   * @returns {*|boolean}
+   */
+
   _createClass(AbstractVersionable, [{
     key: 'hasVersion',
     value: function hasVersion(obj) {
       return obj && typeof obj.version !== 'undefined' && obj.version;
     }
+
+    /**
+     * Check if object has an array of versions
+     * @returns {*|boolean}
+     */
   }, {
     key: 'hasVersions',
     value: function hasVersions() {
       return this.obj && Array.isArray(this.obj.versions) && this.obj.versions.length > 0;
     }
+
+    /**
+     * Find an object's version by name
+     * @param versionName
+     * @returns {*}
+     */
   }, {
     key: 'findVersion',
     value: function findVersion(versionName) {
@@ -256,11 +273,23 @@ var AbstractVersionable = (function () {
         }
       }
     }
+
+    /**
+     * Check if version is active
+     * @param version
+     * @returns {*|boolean}
+     */
   }, {
     key: 'isActive',
     value: function isActive(version) {
       return version && version.active === true;
     }
+
+    /**
+     * Check if version is valid
+     * @param version
+     * @returns {boolean}
+     */
   }, {
     key: 'isValid',
     value: function isValid(version) {
@@ -281,6 +310,11 @@ var AbstractVersionable = (function () {
 
       return (!start || start <= now) && (!end || end >= now);
     }
+
+    /**
+     * Check if object has a valid version
+     * @returns {boolean}
+     */
   }, {
     key: 'hasValidVersion',
     value: function hasValidVersion() {
@@ -333,6 +367,13 @@ var ProductItemConverter = (function () {
     this.products = [];
   }
 
+  /**
+   * Add products to items list
+   * @param products
+   * @param items
+   * @returns {*}
+   */
+
   _createClass(ProductItemConverter, [{
     key: 'add',
     value: function add(products, items) {
@@ -367,16 +408,31 @@ var ProductItemConverter = (function () {
 
       return this._merge();
     }
+
+    /**
+     * Get items list
+     * @returns {*|Array}
+     */
   }, {
     key: 'get',
     value: function get() {
       return this.items;
     }
+
+    /**
+     * Get maxReached
+     * @returns {Array}
+     */
   }, {
     key: 'getMaxReached',
     value: function getMaxReached() {
       return this.maxReached;
     }
+
+    /**
+     * Check if errors
+     * @returns {boolean}
+     */
   }, {
     key: 'hasErrors',
     value: function hasErrors() {
@@ -570,6 +626,12 @@ var ProductPresenter = (function () {
     this.user = user || {};
   }
 
+  /**
+   * Present a list of products
+   * @param products
+   * @returns {*}
+   */
+
   _createClass(ProductPresenter, [{
     key: 'presentList',
     value: function presentList(products) {
@@ -581,6 +643,12 @@ var ProductPresenter = (function () {
 
       return products;
     }
+
+    /**
+     * Present a single product
+     * @param product
+     * @returns {*}
+     */
   }, {
     key: 'present',
     value: function present(product) {
@@ -596,19 +664,17 @@ var ProductPresenter = (function () {
 
       return product;
     }
+
+    /**
+     * Get product price
+     * @param product
+     * @returns {*}
+     */
   }, {
     key: 'getPrice',
     value: function getPrice(product) {
       var i,
           user = this.user;
-      // var products = user.products || [];
-
-      // for (i = 0; i < products.length; i += 1) {
-      //   if (product && products[i].product === product._id) {
-      //     product.price = products[i].price_customer;
-      //     return product;
-      //   }
-      // }
 
       if (this.getListPrice(product, user.list)) {
         //priority 1
@@ -626,6 +692,13 @@ var ProductPresenter = (function () {
       product.price = 0;
       return product;
     }
+
+    /**
+     * Get product price from a list
+     * @param product
+     * @param list
+     * @returns {*}
+     */
   }, {
     key: 'getListPrice',
     value: function getListPrice(product, list) {
@@ -637,12 +710,34 @@ var ProductPresenter = (function () {
         if (product.prices[i].list === list._id) {
           var productPrice = new ProductPrice(list, product.prices[i]);
           product.price = productPrice.getPrice();
-          product.discount = productPrice.getDiscount();
+          product.discount = productPrice.getDiscount() || this.getDiscountList(product.prices[i]);
           product.include_vat = !!list.include_vat;
           return product;
         }
       }
     }
+
+    /**
+     * Get discounts from user's discount list
+     * @param productPrices
+     * @returns {*}
+     */
+  }, {
+    key: 'getDiscountList',
+    value: function getDiscountList(productPrices) {
+      if (!this.user.list_discount) {
+        return;
+      }
+
+      var productPrice = new ProductPrice(this.user.list_discount, productPrices);
+      return productPrice.getDiscount();
+    }
+
+    /**
+     * Get product quantity
+     * @param product
+     * @returns {*}
+     */
   }, {
     key: 'getQuantity',
     value: function getQuantity(product) {
@@ -652,6 +747,12 @@ var ProductPresenter = (function () {
 
       return this.getQuantityFromLots(product);
     }
+
+    /**
+     * Get product quantity from lots
+     * @param product
+     * @returns {*}
+     */
   }, {
     key: 'getQuantityFromLots',
     value: function getQuantityFromLots(product) {
@@ -700,6 +801,11 @@ var ProductPrice = (function (_AbstractVersionable) {
     }
   }
 
+  /**
+   * Get product price
+   * @returns {*}
+   */
+
   _createClass(ProductPrice, [{
     key: 'getPrice',
     value: function getPrice() {
@@ -725,11 +831,21 @@ var ProductPrice = (function (_AbstractVersionable) {
 
       return 0;
     }
+
+    /**
+     * Check if product price has a version
+     * @returns {boolean|string}
+     */
   }, {
     key: 'productPriceHasVersion',
     value: function productPriceHasVersion() {
       return typeof this.productPrice.version !== 'undefined' && this.productPrice.version;
     }
+
+    /**
+     * Get product's discount
+     * @returns {*}
+     */
   }, {
     key: 'getDiscount',
     value: function getDiscount() {
@@ -773,11 +889,23 @@ var ProductVatPresenter = (function (_ProductPresenter) {
 
   _createClass(ProductVatPresenter, [{
     key: 'present',
+
+    /**
+     * Present a product with VAT
+     * @param product
+     * @returns {*}
+     */
     value: function present(product) {
       _get(Object.getPrototypeOf(ProductVatPresenter.prototype), 'present', this).call(this, product);
       product.vat = this.getVat(product);
       return product;
     }
+
+    /**
+     * Get product's VAT
+     * @param product
+     * @returns {*}
+     */
   }, {
     key: 'getVat',
     value: function getVat(product) {
@@ -800,6 +928,12 @@ var ProductVatPresenter = (function (_ProductPresenter) {
         return this.user.rate_default || null;
       }
     }
+
+    /**
+     * Get product's VAT reduced
+     * @param product
+     * @returns {*}
+     */
   }, {
     key: 'getVatReduced',
     value: function getVatReduced(product) {

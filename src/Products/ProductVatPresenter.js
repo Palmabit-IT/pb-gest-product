@@ -2,12 +2,22 @@
 
 class ProductVatPresenter extends ProductPresenter {
 
+  /**
+   * Present a product with VAT
+   * @param product
+   * @returns {*}
+   */
   present(product) {
     super.present(product);
     product.vat = this.getVat(product);
     return product;
   }
 
+  /**
+   * Get product's VAT
+   * @param product
+   * @returns {*}
+   */
   getVat(product) {
     product.rate_reduced = product.rate_reduced || [];
 
@@ -24,6 +34,11 @@ class ProductVatPresenter extends ProductPresenter {
     }
   }
 
+  /**
+   * Get product's VAT reduced
+   * @param product
+   * @returns {*}
+   */
   getVatReduced(product) {
     var i, reduced;
 

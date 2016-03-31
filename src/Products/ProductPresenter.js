@@ -5,6 +5,11 @@ class ProductPresenter {
     this.user = user || {};
   }
 
+  /**
+   * Present a list of products
+   * @param products
+   * @returns {*}
+   */
   presentList (products) {
     var i;
 
@@ -15,6 +20,11 @@ class ProductPresenter {
     return products;
   }
 
+  /**
+   * Present a single product
+   * @param product
+   * @returns {*}
+   */
   present(product) {
     if (typeof product !== 'object') {
       throw new TypeError('product must be an object');
@@ -29,16 +39,13 @@ class ProductPresenter {
     return product;
   }
 
+  /**
+   * Get product price
+   * @param product
+   * @returns {*}
+   */
   getPrice(product) {
     var i, user = this.user;
-    // var products = user.products || [];
-
-    // for (i = 0; i < products.length; i += 1) {
-    //   if (product && products[i].product === product._id) {
-    //     product.price = products[i].price_customer;
-    //     return product;
-    //   }
-    // }
 
     if (this.getListPrice(product, user.list)) {            //priority 1
       return product;
@@ -54,6 +61,12 @@ class ProductPresenter {
     return product;
   }
 
+  /**
+   * Get product price from a list
+   * @param product
+   * @param list
+   * @returns {*}
+   */
   getListPrice(product, list) {
     if (!Array.isArray(product.prices) || !list) {
       return
@@ -63,13 +76,32 @@ class ProductPresenter {
       if (product.prices[i].list === list._id) {
         let productPrice = new ProductPrice(list, product.prices[i]);
         product.price = productPrice.getPrice();
-        product.discount = productPrice.getDiscount();
+        product.discount = productPrice.getDiscount() || this.getDiscountList(product.prices[i]);
         product.include_vat = !!list.include_vat;
         return product;
       }
     }
   }
 
+  /**
+   * Get discounts from user's discount list
+   * @param productPrices
+   * @returns {*}
+   */
+  getDiscountList(productPrices) {
+    if (!this.user.list_discount) {
+      return;
+    }
+
+    let productPrice = new ProductPrice(this.user.list_discount, productPrices);
+    return productPrice.getDiscount();
+  }
+
+  /**
+   * Get product quantity
+   * @param product
+   * @returns {*}
+   */
   getQuantity(product) {
     if (product.intangible === true) {
       return product;
@@ -78,6 +110,11 @@ class ProductPresenter {
     return this.getQuantityFromLots(product);
   }
 
+  /**
+   * Get product quantity from lots
+   * @param product
+   * @returns {*}
+   */
   getQuantityFromLots(product) {
     if (product.lots && product.lots.length > 0) {
       product.quantity = 0;

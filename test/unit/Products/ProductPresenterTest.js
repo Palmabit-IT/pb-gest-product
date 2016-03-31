@@ -161,4 +161,71 @@ describe("ProductPresenterTest", function () {
       expect(presented.lots[2].lot).toBe('a');
     });
   });
+
+  describe("Discounts presenter", function () {
+    var product, user1, user2;
+
+    beforeEach(function () {
+      product = {
+        prices: [
+          {list: 1, price: 1},
+          {list: 2, price: 2},
+          {list: 3, price: 3}
+        ],
+        intangible: false,
+        lots: [
+          {lot: 'a', quantity: 10},
+          {lot: 'b', quantity: 20}
+        ]
+      };
+
+      user1 = {
+        list: {
+          _id: 1
+        },
+        list_discount: {
+          _id: 2,
+          discount: {
+            name: 'disc1',
+            discounts: [5, 10, 15]
+          }
+        }
+      };
+
+      user2 = {
+        list: {
+          _id: 1,
+          discount: {
+            name: 'adj1',
+            discounts: [10, 20, 30]
+          }
+        },
+        list_discount: {
+          _id: 2,
+          discount: {
+            name: 'disc1',
+            discounts: [5, 10, 15]
+          }
+        }
+      };
+    });
+
+    it("should get discounts from discount list", function () {
+      var presenter = new ProductPresenter(user1);
+      var presented = presenter.present(product);
+      expect(presented.price).toBe(1);
+      expect(presented.discount.name).toBe('disc1');
+      expect(presented.discount.discounts).toEqual([5, 10, 15]);
+      expect(presented.quantity).toBe(30);
+    });
+
+    it("should override discount list with user list", function () {
+      var presenter = new ProductPresenter(user2);
+      var presented = presenter.present(product);
+      expect(presented.price).toBe(1);
+      expect(presented.discount.name).toBe('adj1');
+      expect(presented.discount.discounts).toEqual([10, 20, 30]);
+      expect(presented.quantity).toBe(30);
+    });
+  });
 });

@@ -7,6 +7,12 @@ class ProductItemConverter {
     this.products = [];
   }
 
+  /**
+   * Add products to items list
+   * @param products
+   * @param items
+   * @returns {*}
+   */
   add(products, items) {
     this.products = [];
     this.items = items;
@@ -19,14 +25,26 @@ class ProductItemConverter {
     return this._merge();
   }
 
+  /**
+   * Get items list
+   * @returns {*|Array}
+   */
   get() {
     return this.items;
   }
 
+  /**
+   * Get maxReached
+   * @returns {Array}
+   */
   getMaxReached() {
     return this.maxReached;
   }
 
+  /**
+   * Check if errors
+   * @returns {boolean}
+   */
   hasErrors() {
     return this.maxReached.length > 0;
   }

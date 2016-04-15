@@ -5,10 +5,18 @@ class ProductPresenter {
     this.user = user || {};
   }
 
+  getUser() {
+    return this.user;
+  }
+
+  setUser(user) {
+    this.user = user || {};
+  }
+
   /**
    * Present a list of products
    * @param products
-   * @returns {*}
+   * @returns {*}git 
    */
   presentList (products) {
     var i;

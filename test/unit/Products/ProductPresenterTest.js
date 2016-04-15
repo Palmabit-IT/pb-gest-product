@@ -31,6 +31,27 @@ describe("ProductPresenterTest", function () {
       var presented = presenter.getPrice(product);
       expect(presented.price).toBe(0);
     });
+
+    it("should get list data", function () {
+      var presenter = new ProductPresenter();
+      expect(presenter.getListData({_id: 1, code: 'code', name: 'name', versions: []}, 'b')).toEqual({
+        _id: 1,
+        code: 'code',
+        name: 'name',
+        type: 'b'
+      });
+    });
+
+    it("should present product with list", function () {
+      var presenter = new ProductPresenter({list: {_id: 1}});
+      var presented = presenter.getPrice(product);
+      expect(presented.list).toEqual({
+        _id: 1,
+        code: '',
+        name: '',
+        type: 'c'
+      });
+    });
   });
 
   describe("Quantity product presenter", function () {

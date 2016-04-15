@@ -47,13 +47,13 @@ class ProductPresenter {
   getPrice(product) {
     var i, user = this.user;
 
-    if (this.getListPrice(product, user.list)) {            //priority 1
+    if (this.getListPrice(product, user.list, 'c')) {            //priority 1
       return product;
     }
-    if (this.getListPrice(product, user.list_default)) {    //priority 2
+    if (this.getListPrice(product, user.list_default, 'b')) {    //priority 2
       return product;
     }
-    if (this.getListPrice(product, user.list_active)) {     //priority 3
+    if (this.getListPrice(product, user.list_active, 'd')) {     //priority 3
       return product;
     }
 
@@ -67,7 +67,7 @@ class ProductPresenter {
    * @param list
    * @returns {*}
    */
-  getListPrice(product, list) {
+  getListPrice(product, list, type) {
     if (!Array.isArray(product.prices) || !list) {
       return
     }
@@ -77,6 +77,7 @@ class ProductPresenter {
         let productPrice = new ProductPrice(list, product.prices[i]);
         product.price = productPrice.getPrice();
         product.discount = productPrice.getDiscount() || this.getDiscountList(product.prices[i]);
+        product.list = this.getListData(list, type);
         product.include_vat = !!list.include_vat;
         return product;
       }
@@ -133,5 +134,20 @@ class ProductPresenter {
     }
 
     return product;
+  }
+
+  /**
+   * Get list data
+   * @param list
+   * @param type
+   * @returns {{_id: *, code: (*|string|string|number|Number|string), name: string, type: string}}
+   */
+  getListData(list = {}, type = '') {
+    return {
+      _id: list._id,
+      code: list.code || '',
+      name: list.name || '',
+      type: type
+    }
   }
 }

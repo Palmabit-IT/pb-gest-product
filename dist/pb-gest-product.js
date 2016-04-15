@@ -1,7 +1,7 @@
-/*! pb-gest-product 0.10.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.11.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -626,13 +626,23 @@ var ProductPresenter = (function () {
     this.user = user || {};
   }
 
-  /**
-   * Present a list of products
-   * @param products
-   * @returns {*}
-   */
-
   _createClass(ProductPresenter, [{
+    key: 'getUser',
+    value: function getUser() {
+      return this.user;
+    }
+  }, {
+    key: 'setUser',
+    value: function setUser(user) {
+      this.user = user || {};
+    }
+
+    /**
+     * Present a list of products
+     * @param products
+     * @returns {*}git 
+     */
+  }, {
     key: 'presentList',
     value: function presentList(products) {
       var i;
@@ -676,15 +686,15 @@ var ProductPresenter = (function () {
       var i,
           user = this.user;
 
-      if (this.getListPrice(product, user.list)) {
+      if (this.getListPrice(product, user.list, 'c')) {
         //priority 1
         return product;
       }
-      if (this.getListPrice(product, user.list_default)) {
+      if (this.getListPrice(product, user.list_default, 'b')) {
         //priority 2
         return product;
       }
-      if (this.getListPrice(product, user.list_active)) {
+      if (this.getListPrice(product, user.list_active, 'd')) {
         //priority 3
         return product;
       }
@@ -701,7 +711,7 @@ var ProductPresenter = (function () {
      */
   }, {
     key: 'getListPrice',
-    value: function getListPrice(product, list) {
+    value: function getListPrice(product, list, type) {
       if (!Array.isArray(product.prices) || !list) {
         return;
       }
@@ -711,6 +721,7 @@ var ProductPresenter = (function () {
           var productPrice = new ProductPrice(list, product.prices[i]);
           product.price = productPrice.getPrice();
           product.discount = productPrice.getDiscount() || this.getDiscountList(product.prices[i]);
+          product.list = this.getListData(list, type);
           product.include_vat = !!list.include_vat;
           return product;
         }
@@ -773,6 +784,26 @@ var ProductPresenter = (function () {
       }
 
       return product;
+    }
+
+    /**
+     * Get list data
+     * @param list
+     * @param type
+     * @returns {{_id: *, code: (*|string|string|number|Number|string), name: string, type: string}}
+     */
+  }, {
+    key: 'getListData',
+    value: function getListData() {
+      var list = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var type = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+
+      return {
+        _id: list._id,
+        code: list.code || '',
+        name: list.name || '',
+        type: type
+      };
     }
   }]);
 

@@ -9,25 +9,25 @@ describe("ProductPresenterTest", function () {
     };
 
     it("should present product price", function () {
-      var presenter = new ProductPresenter({list: {_id: 1}});
+      var presenter = new ProductPresenter({list_custom: {_id: 1}});
       var presented = presenter.getPrice(product);
       expect(presented.price).toBe(1);
     });
 
     it("should present product price by default price", function () {
-      var presenter = new ProductPresenter({list_default: {_id: 2}});
+      var presenter = new ProductPresenter({list_base: {_id: 2}});
       var presented = presenter.getPrice(product);
       expect(presented.price).toBe(2);
     });
 
     it("should present product price by active price", function () {
-      var presenter = new ProductPresenter({list_active: {_id: 3}});
+      var presenter = new ProductPresenter({list_default: {_id: 3}});
       var presented = presenter.getPrice(product);
       expect(presented.price).toBe(3);
     });
 
     it("should present product with not found price", function () {
-      var presenter = new ProductPresenter({list: {_id: 4}});
+      var presenter = new ProductPresenter({list_custom: {_id: 4}});
       var presented = presenter.getPrice(product);
       expect(presented.price).toBe(0);
     });
@@ -43,7 +43,7 @@ describe("ProductPresenterTest", function () {
     });
 
     it("should present product with list", function () {
-      var presenter = new ProductPresenter({list: {_id: 1}});
+      var presenter = new ProductPresenter({list_custom: {_id: 1}});
       var presented = presenter.getPrice(product);
       expect(presented.list).toEqual({
         _id: 1,
@@ -100,7 +100,7 @@ describe("ProductPresenterTest", function () {
     });
 
     it("should present product", function () {
-      var presenter = new ProductPresenter({list: {_id: 2}});
+      var presenter = new ProductPresenter({list_custom: {_id: 2}});
       var presented = presenter.present(product);
       expect(presented.price).toBe(2);
       expect(presented.discount).toBeUndefined();
@@ -108,7 +108,7 @@ describe("ProductPresenterTest", function () {
     });
 
     it("should present product with discount", function () {
-      var presenter = new ProductPresenter({list: {_id: 1, discount: {name: 'adj1', discounts: [10, 20, 30]}}});
+      var presenter = new ProductPresenter({list_custom: {_id: 1, discount: {name: 'adj1', discounts: [10, 20, 30]}}});
       var presented = presenter.present(product);
       expect(presented.price).toBe(1);
       expect(presented.discount.name).toBe('adj1');
@@ -118,7 +118,7 @@ describe("ProductPresenterTest", function () {
 
     it("should present product with custom price", function () {
       product.price = 100;
-      var presenter = new ProductPresenter({list: {_id: 2}});
+      var presenter = new ProductPresenter({list_custom: {_id: 2}});
       var presented = presenter.present(product);
       expect(presented.price).toBe(100);
       expect(presented.discount).toBeUndefined();
@@ -126,12 +126,12 @@ describe("ProductPresenterTest", function () {
     });
 
     it("should present product without include vat", function () {
-      var presenter = new ProductPresenter({list: {_id: 1}});
+      var presenter = new ProductPresenter({list_custom: {_id: 1}});
       expect(presenter.present(product).include_vat).toBeFalsy();
     });
 
     it("should present product with include vat", function () {
-      var presenter = new ProductPresenter({list: {_id: 1, include_vat: true}});
+      var presenter = new ProductPresenter({list_custom: {_id: 1, include_vat: true}});
       expect(presenter.present(product).include_vat).toBeTruthy();
     });
 
@@ -201,7 +201,7 @@ describe("ProductPresenterTest", function () {
       };
 
       user1 = {
-        list: {
+        list_custom: {
           _id: 1
         },
         list_discount: {
@@ -214,7 +214,7 @@ describe("ProductPresenterTest", function () {
       };
 
       user2 = {
-        list: {
+        list_custom: {
           _id: 1,
           discount: {
             name: 'adj1',

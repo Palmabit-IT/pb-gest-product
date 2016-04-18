@@ -55,13 +55,13 @@ class ProductPresenter {
   getPrice(product) {
     var i, user = this.user;
 
-    if (this.getListPrice(product, user.list, 'c')) {            //priority 1
+    if (this.getListPrice(product, user.list_custom, 'c')) {            //priority 1
       return product;
     }
-    if (this.getListPrice(product, user.list_default, 'b')) {    //priority 2
+    if (this.getListPrice(product, user.list_base, 'b')) {    //priority 2
       return product;
     }
-    if (this.getListPrice(product, user.list_active, 'd')) {     //priority 3
+    if (this.getListPrice(product, user.list_default, 'd')) {     //priority 3
       return product;
     }
 

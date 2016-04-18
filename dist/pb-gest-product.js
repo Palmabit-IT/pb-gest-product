@@ -640,6 +640,7 @@ var ProductPresenter = (function () {
     /**
      * Present a list of products
      * @param products
+     * @param options
      * @returns {*}git
      */
   }, {
@@ -657,6 +658,7 @@ var ProductPresenter = (function () {
     /**
      * Present a single product
      * @param product
+     * @param options
      * @returns {*}
      */
   }, {
@@ -931,10 +933,11 @@ var ProductVatPresenter = (function (_ProductPresenter) {
     /**
      * Present a product with VAT
      * @param product
+     * @param options
      * @returns {*}
      */
-    value: function present(product) {
-      _get(Object.getPrototypeOf(ProductVatPresenter.prototype), 'present', this).call(this, product);
+    value: function present(product, options) {
+      _get(Object.getPrototypeOf(ProductVatPresenter.prototype), 'present', this).call(this, product, options);
       product.vat = this.getVat(product);
       return product;
     }

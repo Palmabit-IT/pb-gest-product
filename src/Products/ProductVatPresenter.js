@@ -5,10 +5,11 @@ class ProductVatPresenter extends ProductPresenter {
   /**
    * Present a product with VAT
    * @param product
+   * @param options
    * @returns {*}
    */
-  present(product) {
-    super.present(product);
+  present(product, options) {
+    super.present(product, options);
     product.vat = this.getVat(product);
     return product;
   }

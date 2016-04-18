@@ -16,6 +16,7 @@ class ProductPresenter {
   /**
    * Present a list of products
    * @param products
+   * @param options
    * @returns {*}git
    */
   presentList(products, options) {
@@ -31,6 +32,7 @@ class ProductPresenter {
   /**
    * Present a single product
    * @param product
+   * @param options
    * @returns {*}
    */
   present(product, options) {

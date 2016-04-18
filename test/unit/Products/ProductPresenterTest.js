@@ -52,6 +52,24 @@ describe("ProductPresenterTest", function () {
         type: 'c'
       });
     });
+
+    it("should present product from lists vat included", function () {
+      var presenter = new ProductPresenter({list_custom: {_id: 1, include_vat: false}, list_base: {_id: 2, include_vat: true}});
+      var presented = presenter.getPrice(product, {include_vat: true});
+      expect(presented.price).toBe(2);
+    });
+
+    it("should present product from lists vat excluded", function () {
+      var presenter = new ProductPresenter({list_custom: {_id: 1, include_vat: false}, list_base: {_id: 2, include_vat: true}});
+      var presented = presenter.getPrice(product, {include_vat: false});
+      expect(presented.price).toBe(1);
+    });
+
+    it("should present product without vat include/excluded option", function () {
+      var presenter = new ProductPresenter({list_custom: {_id: 1, include_vat: false}, list_base: {_id: 2, include_vat: true}});
+      var presented = presenter.getPrice(product);
+      expect(presented.price).toBe(1);
+    });
   });
 
   describe("Quantity product presenter", function () {

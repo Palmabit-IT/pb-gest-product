@@ -1,7 +1,7 @@
 'use strict';
 
 class ProductPresenter {
-  constructor (user) {
+  constructor(user) {
     this.user = user || {};
   }
 
@@ -16,9 +16,9 @@ class ProductPresenter {
   /**
    * Present a list of products
    * @param products
-   * @returns {*}git 
+   * @returns {*}git
    */
-  presentList (products) {
+  presentList(products) {
     var i;
 
     for (i = 0; i < products.length; i += 1) {
@@ -33,13 +33,13 @@ class ProductPresenter {
    * @param product
    * @returns {*}
    */
-  present(product) {
+  present(product, options) {
     if (typeof product !== 'object') {
       throw new TypeError('product must be an object');
     }
 
     if (!product.price) {
-      this.getPrice(product);
+      this.getPrice(product, options);
     }
 
     this.getQuantity(product);
@@ -50,18 +50,19 @@ class ProductPresenter {
   /**
    * Get product price
    * @param product
+   * @param options
    * @returns {*}
    */
-  getPrice(product) {
+  getPrice(product, options) {
     var i, user = this.user;
 
-    if (this.getListPrice(product, user.list_custom, 'c')) {            //priority 1
+    if (this.getListPrice(product, user.list_custom, 'c', options)) {      //priority 1
       return product;
     }
-    if (this.getListPrice(product, user.list_base, 'b')) {    //priority 2
+    if (this.getListPrice(product, user.list_base, 'b', options)) {        //priority 2
       return product;
     }
-    if (this.getListPrice(product, user.list_default, 'd')) {     //priority 3
+    if (this.getListPrice(product, user.list_default, 'd', options)) {     //priority 3
       return product;
     }
 
@@ -73,11 +74,17 @@ class ProductPresenter {
    * Get product price from a list
    * @param product
    * @param list
+   * @param type
+   * @param options
    * @returns {*}
    */
-  getListPrice(product, list, type) {
+  getListPrice(product, list, type, options) {
     if (!Array.isArray(product.prices) || !list) {
       return
+    }
+
+    if (list && options && list.include_vat !== options.include_vat) {
+      return;
     }
 
     for (var i = 0; i < product.prices.length; i += 1) {

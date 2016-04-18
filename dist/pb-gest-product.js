@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.12.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.13.0 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -640,7 +640,7 @@ var ProductPresenter = (function () {
     /**
      * Present a list of products
      * @param products
-     * @returns {*}git 
+     * @returns {*}git
      */
   }, {
     key: 'presentList',
@@ -661,13 +661,13 @@ var ProductPresenter = (function () {
      */
   }, {
     key: 'present',
-    value: function present(product) {
+    value: function present(product, options) {
       if (typeof product !== 'object') {
         throw new TypeError('product must be an object');
       }
 
       if (!product.price) {
-        this.getPrice(product);
+        this.getPrice(product, options);
       }
 
       this.getQuantity(product);
@@ -678,23 +678,24 @@ var ProductPresenter = (function () {
     /**
      * Get product price
      * @param product
+     * @param options
      * @returns {*}
      */
   }, {
     key: 'getPrice',
-    value: function getPrice(product) {
+    value: function getPrice(product, options) {
       var i,
           user = this.user;
 
-      if (this.getListPrice(product, user.list_custom, 'c')) {
+      if (this.getListPrice(product, user.list_custom, 'c', options)) {
         //priority 1
         return product;
       }
-      if (this.getListPrice(product, user.list_base, 'b')) {
+      if (this.getListPrice(product, user.list_base, 'b', options)) {
         //priority 2
         return product;
       }
-      if (this.getListPrice(product, user.list_default, 'd')) {
+      if (this.getListPrice(product, user.list_default, 'd', options)) {
         //priority 3
         return product;
       }
@@ -707,12 +708,18 @@ var ProductPresenter = (function () {
      * Get product price from a list
      * @param product
      * @param list
+     * @param type
+     * @param options
      * @returns {*}
      */
   }, {
     key: 'getListPrice',
-    value: function getListPrice(product, list, type) {
+    value: function getListPrice(product, list, type, options) {
       if (!Array.isArray(product.prices) || !list) {
+        return;
+      }
+
+      if (list && options && list.include_vat !== options.include_vat) {
         return;
       }
 

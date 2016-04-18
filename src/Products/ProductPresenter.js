@@ -18,11 +18,11 @@ class ProductPresenter {
    * @param products
    * @returns {*}git
    */
-  presentList(products) {
+  presentList(products, options) {
     var i;
 
     for (i = 0; i < products.length; i += 1) {
-      this.present(products[i]);
+      this.present(products[i], options);
     }
 
     return products;

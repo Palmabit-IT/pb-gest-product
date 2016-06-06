@@ -1,5 +1,9 @@
 'use strict';
 
+const LIST_BASE = 'b';
+const LIST_CUSTOM = 'c';
+const LIST_DEFAULT = 'd';
+
 class ProductPresenter {
   constructor(user) {
     this.user = user || {};
@@ -57,18 +61,21 @@ class ProductPresenter {
    */
   getPrice(product, options) {
     var i, user = this.user;
+    this.setDafaults(product);
 
-    if (this.getListPrice(product, user.list_custom, 'c', options)) {      //priority 1
-      return product;
-    }
-    if (this.getListPrice(product, user.list_base, 'b', options)) {        //priority 2
-      return product;
-    }
-    if (this.getListPrice(product, user.list_default, 'd', options)) {     //priority 3
+    product = this.getListPrice(product, user.list_custom, LIST_CUSTOM, options);     //priority 1
+
+    if (this._hasPriceAndDiscount(product)) {
       return product;
     }
 
-    product.price = 0;
+    product = this.getListPrice(product, user.list_base, LIST_BASE, options);         //priority 2
+
+    if (this._hasPriceAndDiscount(product)) {
+      return product;
+    }
+
+    product = this.getListPrice(product, user.list_default, LIST_DEFAULT, options);   //priority 3
     return product;
   }
 
@@ -82,37 +89,46 @@ class ProductPresenter {
    */
   getListPrice(product, list, type, options) {
     if (!Array.isArray(product.prices) || !list) {
-      return
+      return product;
     }
 
     if (list && options && list.include_vat !== options.include_vat) {
-      return;
+      return product;
     }
 
     for (var i = 0; i < product.prices.length; i += 1) {
       if (product.prices[i].list === list._id) {
         let productPrice = new ProductPrice(list, product.prices[i]);
-        product.price = productPrice.getPrice();
-        product.discount = productPrice.getDiscount() || this.getDiscountList(product.prices[i]);
-        product.list = this.getListData(list, type);
-        product.include_vat = !!list.include_vat;
+
+        if (!this._hasPrice(product)) {
+          product.price = productPrice.getPrice();
+          product.list = this.getListData(list, type);
+          product.include_vat = !!list.include_vat;
+        }
+
+        if (!this._hasDiscount(product)) {
+          product.discount = productPrice.getDiscount();
+        }
+
         return product;
       }
     }
+
+    return product;
+  }
+
+  setDafaults(product) {
+    product.price = 0;
+    product.discount = this.getUserDiscount();
+    return product;
   }
 
   /**
    * Get discounts from user's discount list
-   * @param productPrices
    * @returns {*}
    */
-  getDiscountList(productPrices) {
-    if (!this.user.list_discount) {
-      return;
-    }
-
-    let productPrice = new ProductPrice(this.user.list_discount, productPrices);
-    return productPrice.getDiscount();
+  getUserDiscount() {
+    return this.user.discount;
   }
 
   /**
@@ -166,5 +182,17 @@ class ProductPresenter {
       name: list.name || '',
       type: type
     }
+  }
+
+  _hasPrice(product) {
+    return product && product.price && product.price !== 0;
+  }
+
+  _hasDiscount(product) {
+    return product && typeof product.discount === 'object' && product.discount._id;
+  }
+
+  _hasPriceAndDiscount(product) {
+    return this._hasPrice(product) && this._hasDiscount(product);
   }
 }

@@ -1,20 +1,24 @@
 describe("ProductPriceTest", function () {
   it("should get exception if list is not an object", function () {
-    expect(function(){new ProductPrice()}).toThrow(new TypeError('list must be an object'));
+    expect(function () {
+      new ProductPrice()
+    }).toThrow(new TypeError('list must be an object'));
   });
 
   it("should get exception if price is not an object", function () {
-    expect(function(){new ProductPrice({})}).toThrow(new TypeError('product price must be an object'));
+    expect(function () {
+      new ProductPrice({})
+    }).toThrow(new TypeError('product price must be an object'));
   });
 });
 
 describe("Product list with version", function () {
   var list, productPrice, obj,
-      date1 = new Date(), date2 = new Date(), date3 = new Date(), date4 = new Date();
+    date1 = new Date(), date2 = new Date(), date3 = new Date(), date4 = new Date();
 
   date1 = date1.setDate(date1.getDate() - 100),
-  date2 = date2.setDate(date2.getDate() - 1),
-  date3 = date3.setDate(date3.getDate() + 100);
+    date2 = date2.setDate(date2.getDate() - 1),
+    date3 = date3.setDate(date3.getDate() + 100);
   date4 = date4.setDate(date4.getDate() + 200);
 
   beforeEach(function () {
@@ -22,7 +26,7 @@ describe("Product list with version", function () {
       name: 'L001',
       start: date2,
       end: date3,
-      versions : [
+      versions: [
         {
           name: '1',                  //not valid
           active: true,
@@ -96,7 +100,7 @@ describe("Product list with version", function () {
         name: 'L001',
         start: date1,
         end: date2,
-        versions : []
+        versions: []
       }
       var obj3 = new ProductPrice(list, {price: 30});
       expect(obj3._getPriceWithoutVersion()).toBe(0);
@@ -118,15 +122,16 @@ describe("Product discount without version", function () {
 
   beforeEach(function () {
     list = {
-      name: 'L001',
+      name: 'L001'
+    };
+
+    obj = new ProductPrice(list, {
       discount: {
         name: 'adj1',
         fixed: 1,
         discounts: [10, 20, 30]
       }
-    };
-
-    obj = new ProductPrice(list, {});
+    });
   });
 
   it("should get discount from list version", function () {
@@ -143,20 +148,22 @@ describe("Product discount with version", function () {
   beforeEach(function () {
     list = {
       name: 'L001',
-      versions : [
+      versions: [
         {
           name: '1',
-          active: true,
-          discount: {
-            name: 'adj1',
-            fixed: 1,
-            discounts: [10, 20, 30]
-          }
+          active: true
         }
       ]
     };
 
-    obj = new ProductPrice(list, {version: '1'});
+    obj = new ProductPrice(list, {
+      version: '1',
+      discount: {
+        name: 'adj1',
+        fixed: 1,
+        discounts: [10, 20, 30]
+      }
+    });
   });
 
   it("should get discount from list version", function () {

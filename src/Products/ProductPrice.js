@@ -62,7 +62,7 @@ class ProductPrice extends AbstractVersionable {
     var version = this.findVersion(this.productPrice.version);
 
     if (version && this.isActive(version) && this.isValid(version)) {
-      return version.discount;
+      return this.productPrice.discount;
     }
 
     return;
@@ -70,7 +70,7 @@ class ProductPrice extends AbstractVersionable {
 
   _getDiscountWithoutVersion() {
     if (this.isValid(this.list) || this.hasValidVersion()) {
-      return this.list.discount;
+      return this.productPrice.discount;
     }
 
     return;

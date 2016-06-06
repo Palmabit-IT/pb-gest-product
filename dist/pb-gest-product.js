@@ -1,4 +1,4 @@
-/*! pb-gest-product 0.13.1 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
+/*! pb-gest-product 0.14.1 - Copyright 2016 Palmabit <hello@palmabit.com> (http://www.palmabit.com) */
 'use strict';
 
 var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -619,6 +619,10 @@ var ProductItemConverter = (function () {
 
 'use strict';
 
+var LIST_BASE = 'b';
+var LIST_CUSTOM = 'c';
+var LIST_DEFAULT = 'd';
+
 var ProductPresenter = (function () {
   function ProductPresenter(user) {
     _classCallCheck(this, ProductPresenter);
@@ -688,21 +692,21 @@ var ProductPresenter = (function () {
     value: function getPrice(product, options) {
       var i,
           user = this.user;
+      this.setDafaults(product);
 
-      if (this.getListPrice(product, user.list_custom, 'c', options)) {
-        //priority 1
-        return product;
-      }
-      if (this.getListPrice(product, user.list_base, 'b', options)) {
-        //priority 2
-        return product;
-      }
-      if (this.getListPrice(product, user.list_default, 'd', options)) {
-        //priority 3
+      product = this.getListPrice(product, user.list_custom, LIST_CUSTOM, options); //priority 1
+
+      if (this._hasPriceAndDiscount(product)) {
         return product;
       }
 
-      product.price = 0;
+      product = this.getListPrice(product, user.list_base, LIST_BASE, options); //priority 2
+
+      if (this._hasPriceAndDiscount(product)) {
+        return product;
+      }
+
+      product = this.getListPrice(product, user.list_default, LIST_DEFAULT, options); //priority 3
       return product;
     }
 
@@ -718,39 +722,49 @@ var ProductPresenter = (function () {
     key: 'getListPrice',
     value: function getListPrice(product, list, type, options) {
       if (!Array.isArray(product.prices) || !list) {
-        return;
+        return product;
       }
 
       if (list && options && list.include_vat !== options.include_vat) {
-        return;
+        return product;
       }
 
       for (var i = 0; i < product.prices.length; i += 1) {
         if (product.prices[i].list === list._id) {
           var productPrice = new ProductPrice(list, product.prices[i]);
-          product.price = productPrice.getPrice();
-          product.discount = productPrice.getDiscount() || this.getDiscountList(product.prices[i]);
-          product.list = this.getListData(list, type);
-          product.include_vat = !!list.include_vat;
+
+          if (!this._hasPrice(product)) {
+            product.price = productPrice.getPrice();
+            product.list = this.getListData(list, type);
+            product.include_vat = !!list.include_vat;
+          }
+
+          if (!this._hasDiscount(product)) {
+            product.discount = productPrice.getDiscount();
+          }
+
           return product;
         }
       }
+
+      return product;
+    }
+  }, {
+    key: 'setDafaults',
+    value: function setDafaults(product) {
+      product.price = 0;
+      product.discount = this.getUserDiscount();
+      return product;
     }
 
     /**
      * Get discounts from user's discount list
-     * @param productPrices
      * @returns {*}
      */
   }, {
-    key: 'getDiscountList',
-    value: function getDiscountList(productPrices) {
-      if (!this.user.list_discount) {
-        return;
-      }
-
-      var productPrice = new ProductPrice(this.user.list_discount, productPrices);
-      return productPrice.getDiscount();
+    key: 'getUserDiscount',
+    value: function getUserDiscount() {
+      return this.user.discount;
     }
 
     /**
@@ -813,6 +827,21 @@ var ProductPresenter = (function () {
         name: list.name || '',
         type: type
       };
+    }
+  }, {
+    key: '_hasPrice',
+    value: function _hasPrice(product) {
+      return product && product.price && product.price !== 0;
+    }
+  }, {
+    key: '_hasDiscount',
+    value: function _hasDiscount(product) {
+      return product && typeof product.discount === 'object' && product.discount._id;
+    }
+  }, {
+    key: '_hasPriceAndDiscount',
+    value: function _hasPriceAndDiscount(product) {
+      return this._hasPrice(product) && this._hasDiscount(product);
     }
   }]);
 
@@ -897,7 +926,7 @@ var ProductPrice = (function (_AbstractVersionable) {
       var version = this.findVersion(this.productPrice.version);
 
       if (version && this.isActive(version) && this.isValid(version)) {
-        return version.discount;
+        return this.productPrice.discount;
       }
 
       return;
@@ -906,7 +935,7 @@ var ProductPrice = (function (_AbstractVersionable) {
     key: '_getDiscountWithoutVersion',
     value: function _getDiscountWithoutVersion() {
       if (this.isValid(this.list) || this.hasValidVersion()) {
-        return this.list.discount;
+        return this.productPrice.discount;
       }
 
       return;

@@ -189,7 +189,7 @@ class ProductPresenter {
   }
 
   _hasDiscount(product) {
-    return product && typeof product.discount === 'object' && product.discount._id;
+    return product && typeof product.discount === 'object' && product.discount && product.discount._id;
   }
 
   _hasPriceAndDiscount(product) {
